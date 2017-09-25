@@ -37,6 +37,7 @@
     "express-http-proxy": "^1.0.6",
     "file-loader": "^0.11.2",
     "lnk": "^1.1.0",
+    "merge-stream": "^1.0.1",
     "mkdir-p": "0.0.7",
     "prismjs": "^1.6.0",
     "webpack-dev-middleware": "^1.12.0",

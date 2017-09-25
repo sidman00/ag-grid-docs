@@ -7,7 +7,7 @@ const path = require('path');
 
 module.exports = merge(common, {
     entry: {
-        'ag-grid': ['./src/_assets/ts/ag-grid.ts']
+        'dist/ag-grid': ['./src/_assets/ts/ag-grid.ts']
     },
 
     output: {
