@@ -1,23 +1,22 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
     devtool: 'inline-source-map',
-    entry: [ 'webpack-hot-middleware/client' ],
+    entry: ['webpack-hot-middleware/client'],
     externals: {
         angular: 'angular',
         react: 'react',
-        'react-dom': 'react-dom',
+        'react-dom': 'react-dom'
     },
     resolve: {
         alias: {
             './dist/lib/main': './src/main.ts',
-            './dist/lib': './src/ts',
+            './dist/lib': './src/ts'
         },
-        extensions: ['.ts', '.js'],
+        extensions: ['.ts', '.js']
     },
     module: {
         rules: [
@@ -28,16 +27,16 @@ module.exports = {
                     {
                         loader: 'thread-loader',
                         options: {
-                            workers: require('os').cpus().length - 1,
-                        },
+                            workers: require('os').cpus().length - 1
+                        }
                     },
                     {
                         loader: 'ts-loader',
                         options: {
-                            happyPackMode: true,
-                        },
-                    },
-                ],
+                            happyPackMode: true
+                        }
+                    }
+                ]
             },
             {
                 test: /\.scss$/,
@@ -50,28 +49,20 @@ module.exports = {
                         options: {
                             sourceMap: true,
                             syntax: 'postcss-scss',
-                            plugins: [autoprefixer()],
-                        },
-                    },
-                ],
+                            plugins: [autoprefixer()]
+                        }
+                    }
+                ]
             },
             {
                 test: /\.(svg)$/,
                 use: [
                     {loader: 'url-loader', options: {limit: 8192}},
                     {
-                        loader: require.resolve(
-                            '../ag-grid/src/styles/svg-loader.js',
-                        ),
-                    },
-                ],
-            },
-        ],
-    },
-
-    plugins: [
-        new ForkTsCheckerWebpackPlugin({
-            tsconfig: path.resolve(__dirname, './tsconfig.json'),
-        }),
-    ],
+                        loader: require.resolve('../../ag-grid/src/styles/svg-loader.js')
+                    }
+                ]
+            }
+        ]
+    }
 };

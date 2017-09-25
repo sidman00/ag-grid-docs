@@ -16,6 +16,11 @@ const filter = require('gulp-filter');
 const gulpIf = require('gulp-if');
 const replace = require('gulp-replace');
 
+const lnk = require('lnk').sync;
+const mkdirp = require('mkdir-p').sync;
+const fs = require('fs');
+const colors = require('colors');
+
 gulp.task('process-src', processSrc);
 gulp.task('copy-from-ag-grid', copyFromAgGrid);
 gulp.task('copy-from-ag-grid-enterprise', copyFromAgGridEnterprise);
@@ -107,33 +112,7 @@ function copyFromAgGridEnterprise() {
         .pipe(gulp.dest('./dist/dist/ag-grid-enterprise'));
 }
 
-gulp.task('serve', cb => {
-    const webpackDevServerCmd =
-        process.platform == 'win32'
-            ? '.\\node_modules\\.bin\\webpack-dev-server.cmd'
-            : './node_modules/.bin/webpack-dev-server';
-
-    const php = cp.spawn('php', ['-S', '127.0.0.1:8888', '-t', 'src'], {
-        stdio: 'inherit',
-        env: {AG_DEV: 'true'}
-    });
-    const gulp = cp.spawn(webpackDevServerCmd, {stdio: 'inherit'});
-
-    process.on('exit', () => {
-        php.kill();
-        gulp.kill();
-    });
-});
-
-gulp.task('serve-release', () => {
-    const php = cp.spawn('php', ['-S', '127.0.0.1:9090', '-t', 'dist'], {
-        stdio: 'inherit'
-    });
-
-    process.on('exit', () => {
-        php.kill();
-    });
-});
+gulp.task('serve', require('./dev-server'));
 
 gulp.task('serve-preview', () => {
     const php = cp.spawn('php', ['-S', '127.0.0.1:9999', '-t', 'dist'], {
@@ -141,64 +120,5 @@ gulp.task('serve-preview', () => {
     });
     process.on('exit', () => {
         php.kill();
-    });
-});
-
-const express = require('express');
-const realWebpack = require('webpack');
-const proxy = require('express-http-proxy');
-const webpackMiddleware = require('webpack-dev-middleware');
-const hotMiddleware = require('webpack-hot-middleware');
-
-function addWebpackMiddleware(app, configPath, path) {
-    const webpackConfig = require(configPath);
-    const compiler = realWebpack(webpackConfig);
-    app.use(path, 
-        webpackMiddleware(compiler, {
-            noInfo: true, 
-            publicPath: '/'
-        })
-    );
-
-    app.use(path, hotMiddleware(compiler));
-}
-
-gulp.task('s', callback => {
-    const app = express();
-
-    const angularWatch = cp.spawn('gulp', ['watch'], {
-        stdio: 'inherit',
-        cwd: '../ag-grid-angular'
-    });
-
-    const php = cp.spawn('php', ['-S', '127.0.0.1:8888', '-t', 'src'], {
-        stdio: 'inherit',
-        env: {AG_DEV: 'true'}
-    });
-
-    app.use(function(req, res, next) {
-        res.setHeader('Access-Control-Allow-Origin', '*');
-        return next();
-    });
-
-    addWebpackMiddleware(app, './webpack.ag-grid.config', '/dev/ag-grid/');
-    addWebpackMiddleware(app, './webpack.site.config', '/dist/');
-    addWebpackMiddleware(app, './webpack.ag-grid-enterprise.config', '/dev/ag-grid-enterprise');
-    addWebpackMiddleware(app, './webpack.ag-grid-enterprise-bundle.config', '/dev/ag-grid-enterprise-bundle');
-    addWebpackMiddleware(app, './webpack.ag-grid-react.config', '/dev/ag-grid-react');
-
-    app.use('/dev/ag-grid-angular', express.static('../ag-grid-angular'));
-    app.use(
-        '/',
-        proxy('http://127.0.0.1:8888', {
-            proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
-                proxyReqOpts.headers['X-PROXY-HTTP-HOST'] = srcReq.headers.host;
-                return proxyReqOpts;
-            }
-        })
-    );
-
-    app.listen(3000, function() {
-        console.log('Example app listening on port 3000!');
     });
 });

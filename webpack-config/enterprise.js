@@ -1,5 +1,6 @@
 const merge = require('webpack-merge');
-const common = require('./webpack.common.config');
+const common = require('./common');
+const tsChecker = require('./fork-ts-checker.ts');
 
 const webpack = require('webpack');
 const path = require('path');
@@ -19,5 +20,10 @@ module.exports = merge(common, {
         'ag-grid': 'ag-grid',
         'ag-grid/main': 'ag-grid'
     },
-    plugins: [new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin()]
+
+    plugins: [
+        tsChecker(), 
+        new webpack.NamedModulesPlugin(), 
+        new webpack.HotModuleReplacementPlugin()
+    ]
 });

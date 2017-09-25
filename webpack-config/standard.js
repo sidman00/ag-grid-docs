@@ -1,5 +1,6 @@
 const merge = require('webpack-merge');
-const common = require('./webpack.common.config');
+const common = require('./common');
+const tsChecker = require('./fork-ts-checker.ts');
 
 const webpack = require('webpack');
 const path = require('path');
@@ -13,8 +14,11 @@ module.exports = merge(common, {
         filename: '[name].js',
         library: ['agGrid'],
         libraryTarget: 'umd',
-        publicPath: '/'
+        publicPath: 'http://localhost:8080/'
     },
 
-    plugins: [new webpack.NamedModulesPlugin(), new webpack.HotModuleReplacementPlugin()]
+    plugins: [
+        new webpack.NamedModulesPlugin(),
+        new webpack.HotModuleReplacementPlugin()
+    ]
 });
