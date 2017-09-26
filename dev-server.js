@@ -7,6 +7,10 @@ const proxy = require('express-http-proxy');
 const webpackMiddleware = require('webpack-dev-middleware');
 const hotMiddleware = require('webpack-hot-middleware');
 
+const lnk = require('lnk').sync;
+const mkdirp = require('mkdir-p').sync;
+const colors = require('colors');
+
 const EXPRESS_PORT = 8080;
 const PHP_PORT = 8888;
 const HOST = '127.0.0.1';

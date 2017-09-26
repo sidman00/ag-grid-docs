@@ -15,11 +15,6 @@ const filter = require('gulp-filter');
 const gulpIf = require('gulp-if');
 const replace = require('gulp-replace');
 
-const lnk = require('lnk').sync;
-const mkdirp = require('mkdir-p').sync;
-const fs = require('fs');
-const colors = require('colors');
-
 const merge = require('merge-stream');
 
 const SKIP_INLINE = true;
