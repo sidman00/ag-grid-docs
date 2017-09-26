@@ -1,3 +1,4 @@
+const os = require('os');
 const fs = require('fs');
 const cp = require('child_process');
 const path = require('path');
@@ -14,6 +15,7 @@ const colors = require('colors');
 const EXPRESS_PORT = 8080;
 const PHP_PORT = 8888;
 const HOST = '127.0.0.1';
+const WINDOWS = /win/.test(os.platform());
 
 function addWebpackMiddleware(app, configPath, prefix) {
     const webpackConfig = require(path.resolve('./webpack-config/', configPath + '.js'));
@@ -48,7 +50,9 @@ function launchPhpCP(app) {
 }
 
 function serveAndWatchAngular(app) {
-    const angularWatch = cp.spawn('gulp', ['watch'], {
+    const gulpPath = WINDOWS ? 'node_modules\\.bin\\gulp.cmd' : 'node_modules/.bin/gulp';
+
+    const angularWatch = cp.spawn(gulpPath, ['watch'], {
         stdio: 'inherit',
         cwd: '../ag-grid-angular'
     });
@@ -61,6 +65,7 @@ function launchTSCCheck() {
         console.log('_dev not present, creating links...');
 
         const linkType = 'symbolic';
+        
         mkdirp('_dev/ag-grid/dist');
         lnk('../ag-grid/exports.ts', '_dev/ag-grid/', {force: true, type: linkType, rename: 'main.ts'});
         lnk('../ag-grid/src/ts', '_dev/ag-grid/dist', {force: true, type: linkType, rename: 'lib'});
@@ -69,7 +74,9 @@ function launchTSCCheck() {
         lnk('../ag-grid-angular/', '_dev', {force: true, type: linkType});
     }
 
-    const tsChecker = cp.spawn('tsc', ['--watch', '--noEmit']);
+    const tscPath = WINDOWS ? 'node_modules\\.bin\\tsc.cmd' : 'node_modules/.bin/tsc';
+    
+    const tsChecker = cp.spawn(tscPath, ['--watch', '--noEmit']);
 
     tsChecker.stdout.on('data', data => {
         data
